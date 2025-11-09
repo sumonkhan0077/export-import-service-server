@@ -30,7 +30,50 @@ async function run() {
     const db = client.db('export_import');
     const productsCollection = db.collection('products');
 
- 
+    // data pawa jabe 
+    app.get('/products', async (req , res ) => {
+        const cursor = productsCollection.find();
+        const result = await cursor.toArray();
+        res.send(result)
+    })
+
+    // data pabo id te
+    app.get('/products/:id' , async (req , res ) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id)};
+        const result = await productsCollection.findOne(query);
+        res.send(result)
+    })
+
+    // data pathaschi
+    app.post('/products', async (req , res) => {
+        const newProducts = req.body;
+        const result = await productsCollection.insertOne(newProducts);
+        res.send(result);
+    })
+
+    // update data
+     app.patch('/products/:id' , async(req , res ) => {
+        const id = req.params.id;
+        const updatedProduct = req.body;
+        const query = {_id : new ObjectId(id)}; 
+        const update = {
+            $set: {
+                name: updatedProduct.name,
+                price: updatedProduct.price
+            }
+        }
+        const result = await productsCollection.updateOne(query , update);
+        res.send(result)
+     })
+
+    // delete data
+    app.delete('/products/:id' , async (req , res) => {
+        const id = req.params.id;
+        const query  = {_id: new ObjectId(id)};
+        const result = await productsCollection.deleteOne(query);
+        res.send(result)
+    })
     
 
     await client.db("admin").command({ ping: 1 });
