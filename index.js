@@ -23,7 +23,26 @@ app.get('/', (req , res) => {
     res.send('export import server is running ')
 })
 
+async function run() {
+  try{
+    await  client.connect();
 
+    const db = client.db('export_import');
+    const productsCollection = db.collection('products');
+
+ 
+    
+
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  }
+  finally{
+    //  await client.close();
+  }
+    
+}
+
+run().catch(console.dir)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
