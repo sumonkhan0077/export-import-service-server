@@ -29,6 +29,25 @@ async function run() {
 
     const db = client.db('export_import');
     const productsCollection = db.collection('products');
+    const myCollection = db.collection('myProducts')
+    const usersCollection = db.collection('users')
+
+    // user data 
+    app.post('/users' , async (req , res ) => {
+      const newUser = req.body;
+
+      const email = req.body.email;
+      const query = {email: email};
+      const existingUser = await usersCollection.findOne(query);
+      if (existingUser) {
+         res.send('user already exits , do not need to add user')
+      }
+      else{
+        const result = await usersCollection.insertOne(newUser);
+        res.send(result)
+
+      }
+    })
 
     // data pawa jabe 
     app.get('/products', async (req , res ) => {
