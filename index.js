@@ -56,6 +56,13 @@ async function run() {
         res.send(result)
     })
 
+    // latest products
+    app.get('/latest-products' , async (req, res) =>{
+      const cursor = productsCollection.find().sort({time: -1}).limit(6);
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
     // data pabo id te
     app.get('/products/:id' , async (req , res ) => {
         const id = req.params.id;
