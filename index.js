@@ -56,25 +56,67 @@ async function run() {
       res.send(result);
     });
 
+    // email diya pawa
     app.get("/myImport", async (req, res) => {
-      const email = req.query.email; 
+      const email = req.query.email;
 
       let query = {};
       if (email) {
         query = { buyer_email: email };
       }
-
       const cursor = myImportCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    // data pawa jabe
-    app.get("/products", async (req, res) => {
-      const cursor = productsCollection.find();
-      const result = await cursor.toArray();
+    app.delete("/myImport/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await myImportCollection.deleteOne(query);
       res.send(result);
     });
+
+    // data pawa jabe
+    // app.get("/products", async (req, res) => {
+    //   const cursor = productsCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
+
+    app.get("/products", async (req, res) => {
+      try {
+        const email = req.query.email;
+        console.log("Received email:", email);
+
+        let query = {};
+        if (email) {
+          query = { exporter_email: email };
+        }
+
+        const result = await productsCollection.find(query).toArray();
+        console.log("Matched products:", result.length);
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).send({ message: "Server error" });
+      }
+    });
+
+    // products email diya pawa
+    // app.get("/products", async (req, res) => {
+    //   const email = req.query.email;
+    //   console.log("Received email:", email);
+
+    //   let query = {};
+    //   if (email) {
+    //     query = { exporter_email: email };
+    //   }
+
+    //   const cursor = productsCollection.find(query);
+    //   const result = await cursor.toArray();
+    //    console.log("Matched products:", result.length);
+    //   res.send(result);
+    // });
 
     // latest products
     app.get("/latest-products", async (req, res) => {
@@ -105,8 +147,14 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const update = {
         $set: {
-          name: updatedProduct.name,
-          price: updatedProduct.price,
+        product_image: updatedProduct.product_image,
+        product_name: updatedProduct.product_name,
+        price: updatedProduct.price,
+        origin_country: updatedProduct.origin_country,
+        rating: updatedProduct.rating,
+        rating_number: updatedProduct.rating_number,
+        available_quantity: updatedProduct.available_quantity,
+        description: updatedProduct.description,
         },
       };
       const result = await productsCollection.updateOne(query, update);
