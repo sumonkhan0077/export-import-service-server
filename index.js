@@ -51,9 +51,15 @@ async function run() {
     });
 
     app.post("/myImport", async (req, res) => {
-      const newProducts = req.body;
-      const result = await myImportCollection.insertOne(newProducts);
-      res.send(result);
+      const newImport  = req.body;
+      const quantity = parseInt(newImport.quantity);
+      const result = await myImportCollection.insertOne(newImport);
+      const filter = { _id: new ObjectId(newImport.product_id)}
+      const update = {
+        $inc :{ available_quantity: -quantity}
+      }
+      const countQuantity = await productsCollection.updateOne(filter , update)
+      res.send(result , countQuantity);
     });
 
     // email diya pawa
@@ -86,7 +92,7 @@ async function run() {
     app.get("/products", async (req, res) => {
       try {
         const email = req.query.email;
-        console.log("Received email:", email);
+        // console.log("Received email:", email);
 
         let query = {};
         if (email) {
@@ -97,7 +103,7 @@ async function run() {
         console.log("Matched products:", result.length);
         res.send(result);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        // console.error("Error fetching products:", error);
         res.status(500).send({ message: "Server error" });
       }
     });
