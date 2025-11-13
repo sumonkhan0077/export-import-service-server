@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("export_import");
     const productsCollection = db.collection("products");
@@ -186,6 +186,6 @@ async function run() {
 
 run().catch(console.dir);
 
-// app.listen(port, () => {
-//   console.log(`Example app listening on port ${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
